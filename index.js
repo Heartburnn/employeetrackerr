@@ -141,99 +141,17 @@ function startPrompt() {
         break;
 
         case "add an employee":
-          inquirer
-            .prompt([
-            {
-              name: "firstname",
-              message: "What is the employee's first name?",
-            },
-           {
-             name: "lastname",
-             message: "What is the employee's last name?",
-           },
-           {
-              name: "role",
-              type: "list",
-             message: "What is the employee's position?",
-              choices: selectRole(),
-           },
-           {
-              name: "manager",
-              type: "rawlist",
-              message: "Who is the employee's manager?",
-              choices: selectManager(),
-           },
-          ])
-           .then((val) => {
-            let roleid = selectRole().indexOf(val.role) + 1;
-            let managerid = selectManager().indexOf(val.manager) + 1;
-            console.log(val.role);
-            console.log(val.manager);
-           db.query(
-             "INSERT INTO employee SET ?",
-              {
-              first_name: val.firstname,
-              last_name: val.lastname,
-             manager_id: managerid,
-              roles_id: roleid,
-             },
-             (err) => {
-                if (err) throw err;
-                console.table(val);
-               runPrompt();
-             }
-            );
-          });
-          break;
+          startPrompt();
+        break;
 
-          case "update an employee role":
-          db.query(
-            "SELECT employee.last_name, roles.title, FROM employee JOIN roles ON employee.roles_id = roles.id;",
-            function (err, res) {
-              if (err) throw err;
-              inquirer
-                .prompt([
-                  {
-                    name: "lastName",
-                    type: "rawlist",
-                    choices: function () {
-                      var lastName = [];
-                      for (var i = 0; i < res.length; i++) {
-                        lastName.push(res[i].last_name);
-                      }
-                      return lastName;
-                    },
-                    message: "What is the Employee's last name? ",
-                  },
-                  {
-                    name: "role",
-                    type: "rawlist",
-                    message: "What is the Employees new title? ",
-                    choices: selectRole(),
-                  },
-                ])
-                .then(function (val) {
-                  console.log(val.role);
-                  console.log(val.lastName);
-                  var roleId = selectRole().indexOf(val.role) + 1;
-                  db.query("UPDATE employee SET roles_id =? WHERE last_name =?", [
-                    roleId,
-                    val.lastName,
-                  ]),
-                    function (err) {
-                      if (err) throw err;
-                      console.table(val);
-                    };
-                    startPrompt()
-                });
-            }
-            );
-          break;
+        case "update an employee role":
+          startPrompt();
+        break;
 
-           case "exit":
-              console.log("you have exited");
-             process.exit();
-            break;
+        case "exit":
+          console.log("you have exited");
+          process.exit();
+        break;
          }
        });
 }
